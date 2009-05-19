@@ -31,7 +31,7 @@ class Metadata():
       dom = parse(self.xmlpath)
       return get_dir_names(dom, path)
 
-   def create(self, path):
+   def create(self, path, node_number):
       print("****create****")
       
       # prepare File element to be put in metadata
@@ -39,6 +39,7 @@ class Metadata():
       root = dom.documentElement
       new_element = dom.createElement("File")
       new_element.setAttribute("path", path)
+      new_element.setAttribute("node", node_number)
       new_element.setAttribute("st_ctime", "0")
       new_element.setAttribute("st_atime", "0")
       root.appendChild(new_element)

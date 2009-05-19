@@ -292,8 +292,10 @@ class FUSE(object):
 
     
     def open(self, path, fi):
+        print 'PATH for CREATE', path, fi
         mod_path = '/fuse'+path
         if self.metadata.isLocal(mod_path):
+           print 'is local file'
            real_path = '/@fuse'+path.replace('/', '@')
            fi.contents.fh = self.operations('open', real_path, fi.contents.flags)
         else:
@@ -390,6 +392,8 @@ class FUSE(object):
         return self.operations('access', path, amode)
     
     def create(self, path, mode, fi):
+        print '*************************'
+        print path
         fi.contents.fh = self.operations('create', path, mode)
         return 0
     
@@ -419,9 +423,16 @@ class FUSE(object):
             mtime = time_of_timespec(buf.contents.modtime)
             times = (atime, mtime)
         else:
-            times = None
-        return self.operations('utimens', path, times)
-    
+             times = None
+        print 'in utimes'
+        print path
+        mod_path = '/fuse'+path
+        if not self.metadata.isLocal(mod_path):
+           real_path = '/@fuse'+path.replace('/', '@')
+           return self.operations('utimens', real_path, times)
+        else:
+	   return self.operations('utimens', path, times)
+
     def bmap(self, path, blocksize, idx):
         return self.operations('bmap', path, blocksize, idx)
 

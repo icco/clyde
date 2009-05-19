@@ -1,15 +1,12 @@
 #!/usr/bin/env python
 
 from collections import defaultdict
-from errno import ENOENT, ENOTDIR
+from errno import ENOENT
 from stat import S_IFDIR, S_IFLNK, S_IFREG
 from sys import argv, exit
 from time import time
 
 from fuse import FUSE, Operations, LoggingMixIn
-from metadata import Metadata, file_defaults, file_attributes
-
-from xml.dom.minidom import parse
 
 
 class Memory(LoggingMixIn, Operations):
@@ -22,7 +19,6 @@ class Memory(LoggingMixIn, Operations):
         now = time()
         self.files['/'] = dict(st_mode=(S_IFDIR | 0755), st_ctime=now,
             st_mtime=now, st_atime=now)
-        self.metadata = Metadata("metadata.xml")
         
     def chmod(self, path, mode):
         self.files[path]['st_mode'] &= 0770000
@@ -38,17 +34,14 @@ class Memory(LoggingMixIn, Operations):
         self.files[path] = dict(st_mode=(S_IFREG | mode), st_nlink=1,
             st_size=0, st_ctime=time(), st_mtime=time(), st_atime=time())
         self.fd += 1
-        self.metadata.create(path)
         return self.fd
         
     def getattr(self, path, fh=None):
         if path not in self.files:
-            # this file is not local, call git to fetch the file
-            print ("not in files")
-            st = self.metadata.getattr(path)
-        else:    
-	    st = self.files[path]
+            raise OSError(ENOENT)
+        st = self.files[path]
         if path == '/':
+            # Add 2 for `.` and `..` , subtruct 1 for `/`
             st['st_nlink'] = len(self.files) + 1
         return st
         
@@ -58,18 +51,14 @@ class Memory(LoggingMixIn, Operations):
         return 0
     
     def open(self, path, flags):
+        self.fd += 1
         return self.fd
     
     def read(self, path, size, offset, fh):
-        #if path not in self.files
-            #
-	 #   print "reading a non local file" 
         return self.data[path][offset:offset + size]
     
     def readdir(self, path, fh):
-        root = ['.', '..'] 
-        root.extend(self.metadata.readdir(path)) 
-        return root
+        return ['.', '..'] + [x[1:] for x in self.files if x != '/']
     
     def readlink(self, path):
         return self.data[path]
@@ -112,23 +101,6 @@ class Memory(LoggingMixIn, Operations):
         self.files[path]['st_size'] = len(self.data[path])
         return len(data)
 
-    def read_files_from_xml(self, path):
-        dom = parse("metadata.xml")
-        entries = dom.getElementsByTagName("file")
-        for file in entries:
-            path = file.getAttribute("path")
-            self.id_counter += 1
-            self.files[path] = dict()
-
-            print "file: %s" % path
-
-            for key in file_attributes:
-               if file.hasAttribute(key):
-                  self.files[path][key] = int(file.getAttribute(key))
-                  print "key: %s,  value: %s" % (key, file.getAttribute(key))
-               else:
-                  self.files[path][key] = file_defaults[key]
-                  print "key: %s,  default: %s" % (key, file_defaults[key])
 
 if __name__ == "__main__":
     if len(argv) != 2:
