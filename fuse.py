@@ -21,6 +21,8 @@ from functools import partial
 from platform import machine, system
 from traceback import print_exc
 
+from metadata import Metadata, file_defaults, file_attributes
+
 
 class c_timespec(Structure):
     _fields_ = [('tv_sec', c_long), ('tv_nsec', c_long)]
@@ -220,6 +222,7 @@ class FUSE(object):
     
     def __init__(self, operations, mountpoint, **kwargs):
         self.operations = operations
+        self.metadata = Metadata("metadata.xml") 
         args = ['fuse']
         if kwargs.pop('foreground', False):
             args.append('-f')
@@ -233,7 +236,7 @@ class FUSE(object):
             for key, val in kwargs.items()))
         args.append(mountpoint)
         argv = (c_char_p * len(args))(*args)
-        
+
         fuse_ops = fuse_operations()
         for name, prototype in fuse_operations._fields_:
             if prototype != c_voidp and getattr(operations, name, None):
@@ -279,10 +282,23 @@ class FUSE(object):
         return self.operations('chown', path, uid, gid)
     
     def truncate(self, path, length):
-        return self.operations('truncate', path, length)
+        mod_path = '/fuse'+path
+        if self.metadata.isLocal(mod_path):
+           real_path = '/@fuse'+path.replace('/', '@')
+           return self.operations('truncate', real_path, length)
+        else:
+           return self.operations('truncate', path, length)
+           #fetch file here 
+
     
     def open(self, path, fi):
-        fi.contents.fh = self.operations('open', path, fi.contents.flags)
+        mod_path = '/fuse'+path
+        if self.metadata.isLocal(mod_path):
+           real_path = '/@fuse'+path.replace('/', '@')
+           fi.contents.fh = self.operations('open', real_path, fi.contents.flags)
+        else:
+           fi.contents.fh = self.operations('open', path, fi.contents.flags)
+           #fetch file here 
         return 0
     
     def read(self, path, buf, size, offset, fi):
@@ -304,13 +320,33 @@ class FUSE(object):
         return 0
     
     def flush(self, path, fi):
-        return self.operations('flush', path, fi.contents.fh)
+        mod_path = '/fuse'+path
+        if self.metadata.isLocal(mod_path):
+           real_path = '/@fuse'+path.replace('/', '@')
+           return self.operations('flush', real_path, fi.contents.fh)
+        else:
+           #fetch file here
+           return self.operations('flush', path, fi.contents.fh) 
+
     
     def release(self, path, fi):
-        return self.operations('release', path, fi.contents.fh)
+        mod_path = '/fuse'+path
+        if self.metadata.isLocal(mod_path):
+           real_path = '/@fuse'+path.replace('/', '@')
+           return self.operations('release', real_path, fi.contents.fh)
+        else:
+           #fetch file here
+           return self.operations('release', path, fi.contents.fh)
     
     def fsync(self, path, datasync, fi):
-        return self.operations('fsync', path, datasync, fi.contents.fh)
+        mod_path = '/fuse'+path
+        if self.metadata.isLocal(mod_path):
+           real_path = '/@fuse'+path.replace('/', '@')
+           return self.operations('fsync', real_path, datasync, fi.contents.fh)           
+        else:
+           #fetch file here
+           return self.operations('fsync', path, datasync, fi.contents.fh)
+
     
     def setxattr(self, path, name, value, size, options, *args):
         s = string_at(value, size)
