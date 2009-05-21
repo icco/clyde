@@ -258,7 +258,7 @@ class FUSE(object):
         return self.operations('mknod', path, mode, dev)
     
     def mkdir(self, path, mode):
-        return self.operations('mkdir', path, mode)
+        self.metadata.create(path, '2', True)
     
     def unlink(self, path):
         return self.operations('unlink', path)
@@ -281,26 +281,19 @@ class FUSE(object):
     def chown(self, path, uid, gid):
         return self.operations('chown', path, uid, gid)
     
-    def truncate(self, path, length):
-        mod_path = '/fuse'+path
-        if self.metadata.isLocal(mod_path):
-           real_path = '/@fuse'+path.replace('/', '@')
+    def truncate(self, path, lengtx):
+        if self.metadata.isLocal('/fuse'+path):  #path in metadata has extra /fuse
+           real_path = '/@fuse'+path.replace('/', '@') #
            return self.operations('truncate', real_path, length)
         else:
            return self.operations('truncate', path, length)
-           #fetch file here 
-
     
     def open(self, path, fi):
-        print 'PATH for CREATE', path, fi
-        mod_path = '/fuse'+path
-        if self.metadata.isLocal(mod_path):
-           print 'is local file'
+        if self.metadata.isLocal('/fuse'+path):
            real_path = '/@fuse'+path.replace('/', '@')
            fi.contents.fh = self.operations('open', real_path, fi.contents.flags)
         else:
            fi.contents.fh = self.operations('open', path, fi.contents.flags)
-           #fetch file here 
         return 0
     
     def read(self, path, buf, size, offset, fi):
@@ -322,34 +315,26 @@ class FUSE(object):
         return 0
     
     def flush(self, path, fi):
-        mod_path = '/fuse'+path
-        if self.metadata.isLocal(mod_path):
+        if self.metadata.isLocal('/fuse'+path):
            real_path = '/@fuse'+path.replace('/', '@')
            return self.operations('flush', real_path, fi.contents.fh)
         else:
-           #fetch file here
            return self.operations('flush', path, fi.contents.fh) 
-
     
     def release(self, path, fi):
-        mod_path = '/fuse'+path
-        if self.metadata.isLocal(mod_path):
+        if self.metadata.isLocal('/fuse'+path):
            real_path = '/@fuse'+path.replace('/', '@')
            return self.operations('release', real_path, fi.contents.fh)
         else:
-           #fetch file here
            return self.operations('release', path, fi.contents.fh)
     
     def fsync(self, path, datasync, fi):
-        mod_path = '/fuse'+path
-        if self.metadata.isLocal(mod_path):
+        if self.metadata.isLocal('/fuse'+mod_path):
            real_path = '/@fuse'+path.replace('/', '@')
            return self.operations('fsync', real_path, datasync, fi.contents.fh)           
         else:
-           #fetch file here
            return self.operations('fsync', path, datasync, fi.contents.fh)
 
-    
     def setxattr(self, path, name, value, size, options, *args):
         s = string_at(value, size)
         return self.operations('setxattr', path, name, s, options, *args)
@@ -392,8 +377,6 @@ class FUSE(object):
         return self.operations('access', path, amode)
     
     def create(self, path, mode, fi):
-        print '*************************'
-        print path
         fi.contents.fh = self.operations('create', path, mode)
         return 0
     
@@ -424,14 +407,8 @@ class FUSE(object):
             times = (atime, mtime)
         else:
              times = None
-        print 'in utimes'
-        print path
-        mod_path = '/fuse'+path
-        if not self.metadata.isLocal(mod_path):
-           real_path = '/@fuse'+path.replace('/', '@')
-           return self.operations('utimens', real_path, times)
-        else:
-	   return self.operations('utimens', path, times)
+        real_path = '/@fuse'+path.replace('/', '@')
+        return self.operations('utimens', real_path, times)
 
     def bmap(self, path, blocksize, idx):
         return self.operations('bmap', path, blocksize, idx)

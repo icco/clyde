@@ -29,11 +29,10 @@ class Loopback(LoggingMixIn, Operations):
     chown = os.chown
     
     def create(self, path, mode):
-        self.metadata.create(path, '2')
-        print 'ttttttttttttttttttttttttttttttttttttttttttttt'
-        t = os.open(path, os.O_WRONLY | os.O_CREAT, mode)
-        print 'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTttttttt ',t    
-        return t
+        self.metadata.create(path, '2', False)      #update metada w/ path & node
+        real_path = '/fuse/'+path.replace('/', '@') #assumes the file in /fuse/
+        print 'REAL PATH', real_path
+        return os.open(real_path, os.O_WRONLY | os.O_CREAT, mode)
 
     def flush(self, path, fh):
         return os.fsync(fh)
@@ -47,11 +46,9 @@ class Loopback(LoggingMixIn, Operations):
             return self.metadata.getattr(path)
         else:
             real_path = path.replace('/', '@')
-            print ("~~~~~~~~~~~real_path", real_path)
             st = os.lstat(real_path)
             ret = dict((key, getattr(st, key)) for key in ('st_atime', 'st_ctime',
                   'st_gid', 'st_mode', 'st_mtime', 'st_nlink', 'st_size', 'st_uid'))
-            print ret    
             return ret
 
     getxattr = None
@@ -70,7 +67,7 @@ class Loopback(LoggingMixIn, Operations):
     
     def readdir(self, path, fh):
         root = ['.', '..'] 
-        root.extend(self.metadata.readdir(path)) 
+        root.extend(self.metadata.readdir(path)) #stat dir from metadata 
         return root
 
     readlink = os.readlink
@@ -82,7 +79,7 @@ class Loopback(LoggingMixIn, Operations):
         return os.rename(old, self.root + new)
     
     rmdir = os.rmdir
-    
+   
     def statfs(self, path):
         stv = os.statvfs(path)
         return dict((key, getattr(stv, key)) for key in ('f_bavail', 'f_bfree',
@@ -105,7 +102,7 @@ class Loopback(LoggingMixIn, Operations):
 
     def isLocal(path):
         return self.metadata.isLocal(path)
-    
+        
 
 if __name__ == "__main__":
     if len(argv) != 3:

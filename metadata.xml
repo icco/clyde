@@ -2,12 +2,12 @@
 <Dir name="/fuse/">
     <file>remote</file>
     <file>local</file>
-</Dir>
-<Dir id="2" name="/fuse/local" st_atime="0" st_ctime="0" st_mtime="0">
+<file>test</file></Dir>
+<Dir id="2" name="/fuse/local">
     <file>localDir_remoteFile.d</file>
     <file>localDir_localFile.d</file>
 </Dir>
-<Dir id="3" name="/fuse/remote" st_atime="0" st_ctime="0" st_mtime="0">
+<Dir id="3" name="/fuse/remote">
     <file>remoteDir_remoteFile.d</file>
     <file>remoteDir_localFile.d</file>
 </Dir>
@@ -19,5 +19,4 @@
 <File node="2" path="/fuse/" st_atime="0" st_ctime="0" st_mode="16384" st_mtime="0"/>
 <File node="3" path="/fuse/remote/remoteDir_remoteFile.d" st_atime="0" st_ctime="0" st_mtime="0"/>
 <File node="2" path="/fuse/remote/remoteDir_localFile.d" st_atime="0" st_ctime="0" st_mtime="0"/>
-<File path="/fuse/test" st_atime="0" st_ctime="0" st_mode="16384" st_mtime="2"/>
-<File node="2" path="/fuse/dd" st_atime="0" st_ctime="0"/><File node="2" path="/fuse/aads" st_atime="0" st_ctime="0"/><File node="2" path="/fuse/de" st_atime="0" st_ctime="0"/><File node="2" path="/fuse/adad" st_atime="0" st_ctime="0"/><File node="2" path="/fuse/g" st_atime="0" st_ctime="0"/><File node="2" path="/fuse/ad" st_atime="0" st_ctime="0"/><File node="2" path="/fuse/adtr" st_atime="0" st_ctime="0"/><File node="2" path="/fuse/llal" st_atime="0" st_ctime="0"/><File node="2" path="/fuse/a" st_atime="0" st_ctime="0"/><File node="2" path="/fuse/as" st_atime="0" st_ctime="0"/><File node="2" path="/fuse/loeka" st_atime="0" st_ctime="0"/><File node="2" path="/fuse/iieie" st_atime="0" st_ctime="0"/><File node="2" path="/fuse/aoeia" st_atime="0" st_ctime="0"/><File node="2" path="/fuse/asld" st_atime="0" st_ctime="0"/><File node="2" path="/fuse/alksdfoiwe" st_atime="0" st_ctime="0"/><File node="2" path="/fuse/greg" st_atime="0" st_ctime="0"/><File node="2" path="/fuse/alsl" st_atime="0" st_ctime="0"/><File node="2" path="/fuse/asdlfk" st_atime="0" st_ctime="0"/><File node="2" path="/fuse/llaskd" st_atime="0" st_ctime="0"/><File node="2" path="/fuse/asd" st_atime="0" st_ctime="0"/><File node="2" path="/fuse/dda" st_atime="0" st_ctime="0"/><File node="2" path="/fuse/da" st_atime="0" st_ctime="0"/></xml>
+<File node="2" path="/fuse/test" st_atime="0" st_ctime="0" st_mode="16384"/><Dir name="/fuse/test"><file>testfile</file></Dir><File node="2" path="/fuse/test/testfile" st_atime="0" st_ctime="0"/></xml>
