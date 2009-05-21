@@ -12,10 +12,12 @@ from fuse import FUSE, Operations, LoggingMixIn
 from metadata import Metadata
 
 class Git(LoggingMixIn, Operations):    
-
-	def __init__():
-		localhost = socket.gethostbyaddr(socket.gethostname())
+		
+	def __init__(remote,remotedir):
+		self.remotehost = remote
+		self.remotedir = remotedir
 
 	def push(filename)
-		os.system("rsync -azc %s %s:%s%s",filename,remotehost,remotedir,filename)
+		command = "rsync -azc " + filename + " " + self.remotehost + ":" + self.remotedir + filename
+		os.system(command)
 	
