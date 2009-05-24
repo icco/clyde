@@ -8,68 +8,39 @@ from time import time
 
 from fuse import FUSE, Operations, LoggingMixIn
 from metadata import Metadata, file_defaults, file_attributes
+from loopback import Loopback
 
 from xml.dom.minidom import parse
 
-
-class Memory(LoggingMixIn, Operations):
-    """Example memory filesystem. Supports only one level of files."""
+class Clyde(LoggingMixIn, Operations):
     
-    def __init__(self):
-        self.files = {}
-        self.data = defaultdict(str)
-        self.fd = 0
-        now = time()
-        self.files['/'] = dict(st_mode=(S_IFDIR | 0755), st_ctime=now,
-            st_mtime=now, st_atime=now)
-        self.metadata = Metadata("metadata.xml")
-        
+    def __init__(self, local_storage_path, mount_point, clone_addr=None):
+        self.metadata = Metadata(local_storage_path)
+        self.loopback = Loopback(local_storage_path + "/files")
+       
     def chmod(self, path, mode):
-        self.files[path]['st_mode'] &= 0770000
-        self.files[path]['st_mode'] |= mode
-        return 0
+        return self.metadata.chmod(path, mode)
 
     def chown(self, path, uid, gid):
-        self.files[path]['st_uid'] = uid
-        self.files[path]['st_gid'] = gid
-        return 0
+        return self.metadata.chown(path, uid, gid)
     
     def create(self, path, mode):
-        self.files[path] = dict(st_mode=(S_IFREG | mode), st_nlink=1,
-            st_size=0, st_ctime=time(), st_mtime=time(), st_atime=time())
-        self.fd += 1
-        self.metadata.create(path)
-        return self.fd
-        
+        return self.metadata.create(path, mode)
+       
     def getattr(self, path, fh=None):
-        if path not in self.files:
-            # this file is not local, call git to fetch the file
-            print ("not in files")
-            st = self.metadata.getattr(path)
-        else:    
-	    st = self.files[path]
-        if path == '/':
-            st['st_nlink'] = len(self.files) + 1
-        return st
+        return self.metadata.getattr(path, fh)
         
     def mkdir(self, path, mode):
-        self.files[path] = dict(st_mode=(S_IFDIR | mode), st_nlink=2,
-                st_size=0, st_ctime=time(), st_mtime=time(), st_atime=time())
-        return 0
+        return self.metadata.mkdir(path, mode)
     
     def open(self, path, flags):
-        return self.fd
+        return self.loopback.open(path, flags)
     
     def read(self, path, size, offset, fh):
-        #if path not in self.files
-            #
-	 #   print "reading a non local file" 
-        return self.data[path][offset:offset + size]
+        return self.loopback.read(path, size, offset, fh)
     
     def readdir(self, path, fh):
-        root = ['.', '..'] 
-        root.extend(self.metadata.readdir(path)) 
-        return root
+        return self.metadata.readdir(path, fh)
     
     def readlink(self, path):
         return self.data[path]
@@ -131,7 +102,13 @@ class Memory(LoggingMixIn, Operations):
                   print "key: %s,  default: %s" % (key, file_defaults[key])
 
 if __name__ == "__main__":
-    if len(argv) != 2:
-        print 'usage: %s <mountpoint>' % argv[0]
+    if len(argv) < 3 :
+        print 'usage: %s <local storage> <mountpoint>' % argv[0]
         exit(1)
-    fuse = FUSE(Memory(), argv[1], foreground=True)
+
+    clone_addr = None 
+
+    if (len(argv) >= 4):
+        clone_addr = argv[3]
+      
+    fuse = FUSE(Clyde(argv[1], argv[2], clone_addr), argv[2], foreground=True)

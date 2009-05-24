@@ -21,8 +21,6 @@ from functools import partial
 from platform import machine, system
 from traceback import print_exc
 
-from metadata import Metadata, file_defaults, file_attributes
-
 
 class c_timespec(Structure):
     _fields_ = [('tv_sec', c_long), ('tv_nsec', c_long)]
@@ -222,7 +220,6 @@ class FUSE(object):
     
     def __init__(self, operations, mountpoint, **kwargs):
         self.operations = operations
-        self.metadata = Metadata("metadata.xml") 
         args = ['fuse']
         if kwargs.pop('foreground', False):
             args.append('-f')
@@ -236,7 +233,7 @@ class FUSE(object):
             for key, val in kwargs.items()))
         args.append(mountpoint)
         argv = (c_char_p * len(args))(*args)
-
+        
         fuse_ops = fuse_operations()
         for name, prototype in fuse_operations._fields_:
             if prototype != c_voidp and getattr(operations, name, None):
@@ -258,7 +255,7 @@ class FUSE(object):
         return self.operations('mknod', path, mode, dev)
     
     def mkdir(self, path, mode):
-        self.metadata.create(path, '2', True)
+        return self.operations('mkdir', path, mode)
     
     def unlink(self, path):
         return self.operations('unlink', path)
@@ -281,19 +278,11 @@ class FUSE(object):
     def chown(self, path, uid, gid):
         return self.operations('chown', path, uid, gid)
     
-    def truncate(self, path, lengtx):
-        if self.metadata.isLocal('/fuse'+path):  #path in metadata has extra /fuse
-           real_path = '/@fuse'+path.replace('/', '@') #
-           return self.operations('truncate', real_path, length)
-        else:
-           return self.operations('truncate', path, length)
+    def truncate(self, path, length):
+        return self.operations('truncate', path, length)
     
     def open(self, path, fi):
-        if self.metadata.isLocal('/fuse'+path):
-           real_path = '/@fuse'+path.replace('/', '@')
-           fi.contents.fh = self.operations('open', real_path, fi.contents.flags)
-        else:
-           fi.contents.fh = self.operations('open', path, fi.contents.flags)
+        fi.contents.fh = self.operations('open', path, fi.contents.flags)
         return 0
     
     def read(self, path, buf, size, offset, fi):
@@ -315,26 +304,14 @@ class FUSE(object):
         return 0
     
     def flush(self, path, fi):
-        if self.metadata.isLocal('/fuse'+path):
-           real_path = '/@fuse'+path.replace('/', '@')
-           return self.operations('flush', real_path, fi.contents.fh)
-        else:
-           return self.operations('flush', path, fi.contents.fh) 
+        return self.operations('flush', path, fi.contents.fh)
     
     def release(self, path, fi):
-        if self.metadata.isLocal('/fuse'+path):
-           real_path = '/@fuse'+path.replace('/', '@')
-           return self.operations('release', real_path, fi.contents.fh)
-        else:
-           return self.operations('release', path, fi.contents.fh)
+        return self.operations('release', path, fi.contents.fh)
     
     def fsync(self, path, datasync, fi):
-        if self.metadata.isLocal('/fuse'+mod_path):
-           real_path = '/@fuse'+path.replace('/', '@')
-           return self.operations('fsync', real_path, datasync, fi.contents.fh)           
-        else:
-           return self.operations('fsync', path, datasync, fi.contents.fh)
-
+        return self.operations('fsync', path, datasync, fi.contents.fh)
+    
     def setxattr(self, path, name, value, size, options, *args):
         s = string_at(value, size)
         return self.operations('setxattr', path, name, s, options, *args)
@@ -406,10 +383,9 @@ class FUSE(object):
             mtime = time_of_timespec(buf.contents.modtime)
             times = (atime, mtime)
         else:
-             times = None
-        real_path = '/@fuse'+path.replace('/', '@')
-        return self.operations('utimens', real_path, times)
-
+            times = None
+        return self.operations('utimens', path, times)
+    
     def bmap(self, path, blocksize, idx):
         return self.operations('bmap', path, blocksize, idx)
 
