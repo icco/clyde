@@ -1,22 +1,25 @@
 <?xml version="1.0" ?><xml>
-<Dir name="/fuse/">
-    <file>remote</file>
-    <file>local</file>
-<file>test</file></Dir>
-<Dir id="2" name="/fuse/local">
-    <file>localDir_remoteFile.d</file>
-    <file>localDir_localFile.d</file>
+<Dir name="/">
+    <file>testDir</file>
+    <file>documents</file>
+    <file>testfile.test</file>
 </Dir>
-<Dir id="3" name="/fuse/remote">
-    <file>remoteDir_remoteFile.d</file>
-    <file>remoteDir_localFile.d</file>
+<Dir id="2" name="/testDir" st_atime="0" st_ctime="0" st_mtime="0">
+    <file>test1.test</file>
+    <file>test2.test</file>
+    <file>MyDocs</file>
 </Dir>
-<File node="3" path="/fuse/remote" st_atime="0" st_ctime="0" st_mode="16384" st_mtime="0"/>
-<File node="2" path="/fuse/testfile.test" st_atime="0" st_ctime="0" st_mtime="0"/>
-<File node="2" path="/fuse/local" st_atime="0" st_ctime="0" st_mode="16384" st_mtime="0"/>
-<File node="3" path="/fuse/local/localDir_remoteFile.d" st_atime="0" st_ctime="0" st_mtime="0"/>
-<File node="2" path="/fuse/local/localDir_localFile.d" st_atime="0" st_ctime="0" st_mtime="0"/>
-<File node="2" path="/fuse/" st_atime="0" st_ctime="0" st_mode="16384" st_mtime="0"/>
-<File node="3" path="/fuse/remote/remoteDir_remoteFile.d" st_atime="0" st_ctime="0" st_mtime="0"/>
-<File node="2" path="/fuse/remote/remoteDir_localFile.d" st_atime="0" st_ctime="0" st_mtime="0"/>
-<File node="2" path="/fuse/test" st_atime="0" st_ctime="0" st_mode="16384"/><Dir name="/fuse/test"><file>testfile</file></Dir><File node="2" path="/fuse/test/testfile" st_atime="0" st_ctime="0"/></xml>
+<Dir id="3" name="/testDir/MyDocs" st_atime="0" st_ctime="0" st_mtime="0">
+    <file>mydoc.g</file>
+    <file>resume.d</file>
+</Dir>
+<File path="/testDir" st_atime="0" st_ctime="0" st_mode="16384" st_mtime="0"/>
+<File path="/testfile.test" st_atime="0" st_ctime="0" st_mtime="0"/>
+<File path="/documents" st_atime="0" st_ctime="0" st_mode="16384" st_mtime="0"/>
+<File path="/" st_atime="0" st_ctime="0" st_mode="16384" st_mtime="0"/>
+<File path="/testDir/test1.test" st_atime="0" st_ctime="0" st_mtime="0"/>
+<File path="/testDir/test2.test" st_atime="0" st_ctime="0" st_mtime="0"/>
+<File path="/testDir/MyDocs/mydoc.g" st_atime="0" st_ctime="0" st_mtime="0"/>
+<File path="/testDir/MyDocs/resume.d" st_atime="0" st_ctime="0" st_mtime="0"/>
+<File path="/testDir/MyDocs" st_atime="0" st_ctime="0" st_mode="16384" st_mtime="0"/>
+<File path="/.t.swp" st_atime="0" st_ctime="0"/><File path="/bob" st_atime="0" st_ctime="0"/><File path="/d" st_atime="0" st_ctime="0"/><File path="/asdf" st_atime="0" st_ctime="0"/><File path="/dkldkla" st_atime="0" st_ctime="0"/><File path="/dklkladsfa" st_atime="0" st_ctime="0"/><File path="/dkdk" st_atime="0" st_ctime="0"/><File path="/ddka" st_atime="0" st_ctime="0"/><File path="/adkld" st_atime="0" st_ctime="0"/><File path="/dafsd" st_atime="0" st_ctime="0"/><File path="/.dafsd.swp" st_atime="0" st_ctime="0"/><File path="/.dafsd.swpx" st_atime="0" st_ctime="0"/><File path="/.dafsd.swo" st_atime="0" st_ctime="0"/></xml>
