@@ -11,12 +11,16 @@
     <file>remoteDir_remoteFile.d</file>
     <file>remoteDir_localFile.d</file>
 </Dir>
-<File node="3" path="/fuse/remote" st_atime="0" st_ctime="0" st_mode="16384" st_mtime="0"/>
-<File node="2" path="/fuse/testfile.test" st_atime="0" st_ctime="0" st_mtime="0"/>
-<File node="2" path="/fuse/local" st_atime="0" st_ctime="0" st_mode="16384" st_mtime="0"/>
-<File node="3" path="/fuse/local/localDir_remoteFile.d" st_atime="0" st_ctime="0" st_mtime="0"/>
-<File node="2" path="/fuse/local/localDir_localFile.d" st_atime="0" st_ctime="0" st_mtime="0"/>
-<File node="2" path="/fuse/" st_atime="0" st_ctime="0" st_mode="16384" st_mtime="0"/>
-<File node="3" path="/fuse/remote/remoteDir_remoteFile.d" st_atime="0" st_ctime="0" st_mtime="0"/>
-<File node="2" path="/fuse/remote/remoteDir_localFile.d" st_atime="0" st_ctime="0" st_mtime="0"/>
-<File node="2" path="/fuse/test" st_atime="0" st_ctime="0" st_mode="16384"/><Dir name="/fuse/test"><file>testfile</file></Dir><File node="2" path="/fuse/test/testfile" st_atime="0" st_ctime="0"/></xml>
+<File node="1" path="/fuse/remote" st_atime="0" st_ctime="0" st_mode="16384" st_mtime="0"/>
+<File node="0" path="/fuse/testfile.test" st_atime="0" st_ctime="0" st_mtime="0"/>
+<File node="0" path="/fuse/local" st_atime="0" st_ctime="0" st_mode="16384" st_mtime="0"/>
+<File node="0" path="/fuse/local/localDir_remoteFile.d" st_atime="0" st_ctime="0" st_mtime="0"/>
+<File node="0" path="/fuse/local/localDir_localFile.d" st_atime="0" st_ctime="0" st_mtime="0"/>
+<File node="0" path="/fuse/" st_atime="0" st_ctime="0" st_mode="16384" st_mtime="0"/>
+<File node="1" path="/fuse/remote/remoteDir_remoteFile.d" st_atime="0" st_ctime="0" st_mtime="0"/>
+<File node="1" path="/fuse/remote/remoteDir_localFile.d" st_atime="0" st_ctime="0" st_mtime="0"/>
+<File node="0" path="/fuse/test" st_atime="0" st_ctime="0" st_mode="16384"/>
+<Dir name="/fuse/test">
+	<file>testfile</file>
+</Dir>
+<File node="0" path="/fuse/test/testfile" st_atime="0" st_ctime="0"/></xml>
