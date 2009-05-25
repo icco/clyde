@@ -1,22 +1,16 @@
 #!/usr/bin/env python
 
-from __future__ import with_statement
+# Byahh.
 
 from errno import EACCES
 from os.path import realpath
 from sys import argv, exit
-from xml.dom.minidom import parse
-from xml.dom.minidom import Document
 
 import os
 
-from fuse import FUSE, Operations, LoggingMixIn
 from metadata import Metadata
 
 class Rsync():    
-	def __init__(self, remotehost):	
-		self.__init__(self, remotehost,"/fuse")
-
 	def __init__(self, remote, remotedir):
 		self.remotehost = remote
 		self.remotedir = remotedir
@@ -25,6 +19,12 @@ class Rsync():
 		# a : Archival
 		# z : compression
 		# --safe-links : don't get symlinks
-		command = "rsync -az --safe-links " + filename + " " + self.remotehost + ":" + self.remotedir + filename
+		command = "rsync -az --safe-links " + filename + " " + self.remotehost + ":" + self.remotedir + "/" + filename
+		print command
 		os.system(command)
 	
+	def pull(self, filename):
+		command = "rsync -az --safe-links " + self.remotehost + ":" + self.remotedir + "/" + filename  + " " + filename 
+		print command
+		os.system(command)
+
