@@ -21,3 +21,5 @@ def format_metadata(xmlpath):
    dom.writexml(fp, newl="\n")
    fp.close()
 
+def node2ip(node)
+	
