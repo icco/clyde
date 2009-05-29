@@ -14,17 +14,18 @@ class Rsync():
 	def __init__(self, remote, remotedir):
 		self.remotehost = remote
 		self.remotedir = remotedir
-
-	def push(self, filename):
 		# a : Archival
 		# z : compression
 		# --safe-links : don't get symlinks
-		command = "rsync -az --safe-links " + filename + " " + self.remotehost + ":" + self.remotedir + "/" + filename
+		self.attributes = "-az --safe-links "
+
+	def push(self, filename):
+		command = "rsync " + self.attributes + " " + filename + " " + self.remotehost + ":" + self.remotedir + "/" + filename
 		print command
 		os.system(command)
 	
 	def pull(self, filename):
-		command = "rsync -az --safe-links " + self.remotehost + ":" + self.remotedir + "/" + filename  + " " + filename 
+		command = "rsync " + self.attributes + " " + self.remotehost + ":" + self.remotedir + "/" + filename  + " " + filename 
 		print command
 		os.system(command)
 
