@@ -6,11 +6,9 @@ from stat import S_IFDIR, S_IFLNK, S_IFREG
 from sys import argv, exit
 from time import time
 
-# Our stuff plus
 from fuse import FUSE, Operations, LoggingMixIn
 from metadata import Metadata, file_defaults, file_attributes
 from loopback import Loopback
-from rsync import Rsync
 
 from xml.dom.minidom import parse
 
@@ -84,10 +82,6 @@ class Clyde(LoggingMixIn, Operations):
         self.data[path] = self.data[path][:offset] + data
         self.files[path]['st_size'] = len(self.data[path])
         return len(data)
-	
-	def flush(self, path, fi):
-		return 0
-
 
     def read_files_from_xml(self, path):
         dom = parse("metadata.xml")

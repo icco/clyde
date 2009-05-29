@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from errno import ENOENT, ENOTDIR
+from errno import ENOENT, ENOTDIR, ENOTEMPTY
 from stat import S_IFREG, S_IFDIR
 from xml.dom.minidom import parse
 from xml.dom.minidom import Document, Node
@@ -74,17 +74,12 @@ class Metadata(Operations, LoggingMixIn):
       # prepare File element to be put in metadata
       dom = parse(self.xmlpath)
       root = dom.documentElement
-      levels = path.split("/")
-      fname = levels[-1]
-      dir = "/".join(levels[0:-1])
 
-      if(dir == ""):
-         dir = "/"
+      dir, fname = split_path(path)
 
       dir_node = get_file_node(dom, dir)
       direntry_node = dom.createElement("Direntry")
       direntry_node.setAttribute("d_name", fname)
-      direntry_node.appendChild(dom.createTextNode(fname))
       dir_node.appendChild(direntry_node)
 
       now = str(int(time()))
@@ -97,9 +92,8 @@ class Metadata(Operations, LoggingMixIn):
       new_element.setAttribute("st_mode", str(mode))
 
       root.appendChild(new_element)
-      fp = open(self.xmlpath, "w")
-      dom.writexml(fp, newl='\n')
-      fp.close()
+
+      self.writexml(dom)
 
       self.fd += 1
       return self.fd
@@ -107,6 +101,35 @@ class Metadata(Operations, LoggingMixIn):
    def mkdir(self, path, mode):
       self.create(path, mode | S_IFDIR)
       return 0
+
+   def rmdir(self, path):
+      dom = parse(self.xmlpath)
+      if not isDir(dom, path):
+         raise OSError(ENOTDIR)
+      if path == "/" or not isDirEmpty(dom, path):
+         raise OSError(ENOTEMPTY)
+
+      return self.unlink(path)
+
+   def unlink(self, path):
+      dir, fname = split_path(path)
+      dom = parse(self.xmlpath)
+      node = get_file_node(dom, path)
+      dirnode = get_file_node(dom, dir)
+
+      node.parentNode.removeChild(node)
+
+      for direntry in dirnode.childNodes:
+         if direntry.nodeType == direntry.ELEMENT_NODE and \
+          direntry.getAttribute("d_name") == fname:
+            dirnode.removeChild(direntry)
+
+      self.writexml(dom)
+      
+      return 0
+   #def utimens(self, path, times)
+   #   pass
+
 
    def isLocal(self, path):
       flag = False
@@ -118,15 +141,31 @@ class Metadata(Operations, LoggingMixIn):
             break
       return flag
 
-   def isDir(self, path):
-      flag = False
-      dom = parse(self.xmlpath)
-      files = dom.getElementsByTagName("File")
-      for node in files:
-         if (node.getAttribute("st_mode") == '16384') and (node.getAttribute("node") == '2'):
-            flag = True
-            break
-      return flag
+   def writexml(self, dom):
+      fp = open(self.xmlpath, "w")
+      dom.writexml(fp, newl='\n')
+      fp.close()
+
+def isDir(dom, path, node=None):
+   if not node:
+      node = get_file_node(dom, path)
+   return int(node.getAttribute("st_mode")) & S_IFDIR == S_IFDIR
+
+def isDirEmpty(dom, path, node=None):
+   if not node:
+      node = get_file_node(dom, path)
+   return not node.getElementsByTagName("Direntry")
+
+
+def split_path(path):
+   levels = path.split("/")
+   fname = levels[-1]
+   dir = "/".join(levels[0:-1])
+
+   if(dir == ""):
+      dir = "/"
+
+   return (dir, fname)
 
 
 def get_dir_names(dom, path):
