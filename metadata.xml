@@ -28,16 +28,16 @@
 		<File home="4" path="/testDir/MyDocs" st_atime="0" st_ctime="0" st_mode="16384" st_mtime="0"/>
 	</files>
 	<nodes>
-		<node id="1">
+		<node id="1" remoteDir="/fuse">
 			192.168.0.4
 		</node>
-		<node id="2">
+		<node id="2" remoteDir="/fuse">
 			192.168.0.4
 		</node>
-		<node id="3">
+		<node id="3" remoteDir="/fuse">
 			192.168.0.4
 		</node>
-		<node id="4">
+		<node id="4" remoteDir="/fuse">
 			192.168.0.4
 		</node>
 	</nodes>
