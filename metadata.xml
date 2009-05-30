@@ -1,25 +1,44 @@
-<?xml version="1.0" ?><xml>
-<Dir name="/">
-    <file>testDir</file>
-    <file>documents</file>
-    <file>testfile.test</file>
-</Dir>
-<Dir id="2" name="/testDir" st_atime="0" st_ctime="0" st_mtime="0">
-    <file>test1.test</file>
-    <file>test2.test</file>
-    <file>MyDocs</file>
-</Dir>
-<Dir id="3" name="/testDir/MyDocs" st_atime="0" st_ctime="0" st_mtime="0">
-    <file>mydoc.g</file>
-    <file>resume.d</file>
-</Dir>
-<File path="/testDir" st_atime="0" st_ctime="0" st_mode="16384" st_mtime="0"/>
-<File path="/testfile.test" st_atime="0" st_ctime="0" st_mtime="0"/>
-<File path="/documents" st_atime="0" st_ctime="0" st_mode="16384" st_mtime="0"/>
-<File path="/" st_atime="0" st_ctime="0" st_mode="16384" st_mtime="0"/>
-<File path="/testDir/test1.test" st_atime="0" st_ctime="0" st_mtime="0"/>
-<File path="/testDir/test2.test" st_atime="0" st_ctime="0" st_mtime="0"/>
-<File path="/testDir/MyDocs/mydoc.g" st_atime="0" st_ctime="0" st_mtime="0"/>
-<File path="/testDir/MyDocs/resume.d" st_atime="0" st_ctime="0" st_mtime="0"/>
-<File path="/testDir/MyDocs" st_atime="0" st_ctime="0" st_mode="16384" st_mtime="0"/>
-<File path="/.t.swp" st_atime="0" st_ctime="0"/><File path="/bob" st_atime="0" st_ctime="0"/><File path="/d" st_atime="0" st_ctime="0"/><File path="/asdf" st_atime="0" st_ctime="0"/><File path="/dkldkla" st_atime="0" st_ctime="0"/><File path="/dklkladsfa" st_atime="0" st_ctime="0"/><File path="/dkdk" st_atime="0" st_ctime="0"/><File path="/ddka" st_atime="0" st_ctime="0"/><File path="/adkld" st_atime="0" st_ctime="0"/><File path="/dafsd" st_atime="0" st_ctime="0"/><File path="/.dafsd.swp" st_atime="0" st_ctime="0"/><File path="/.dafsd.swpx" st_atime="0" st_ctime="0"/><File path="/.dafsd.swo" st_atime="0" st_ctime="0"/></xml>
+<?xml version="1.0" ?>
+<xml>
+		<files>
+     	<File name="/">
+			<Direntry d_name="testDir"/>
+			<Direntry d_name="documents"/>
+			<Direntry d_name="testfile.test"/>
+		</File>
+		<File id="2" name="/testDir" st_atime="0" st_ctime="0" st_mtime="0">
+			<Direntry d_name="test1.test"/>
+			<Direntry d_name="test2.test"/>
+			<Direntry d_name="MyDocs"/>
+		</File>
+		<File id="3" name="/testDir/MyDocs" st_atime="0" st_ctime="0" st_mtime="0">
+			<Direntry d_name="mydoc.g"/>
+			<Direntry d_name="resume.d"/>
+		</File>
+
+
+		<File home="4" path="/testDir" st_atime="0" st_ctime="0" st_mode="16384" st_mtime="0"/>
+		<File home="4" path="/testfile.test" st_atime="0" st_ctime="0" st_mtime="0"/>
+		<File home="4" path="/documents" st_atime="0" st_ctime="0" st_mode="16384" st_mtime="0"/>
+		<File home="4" path="/" st_atime="0" st_ctime="0" st_mode="16384" st_mtime="0"/>
+		<File home="4" path="/testDir/test1.test" st_atime="0" st_ctime="0" st_mtime="0"/>
+		<File home="4" path="/testDir/test2.test" st_atime="0" st_ctime="0" st_mtime="0"/>
+		<File home="4" path="/testDir/MyDocs/mydoc.g" st_atime="0" st_ctime="0" st_mtime="0"/>
+		<File home="4" path="/testDir/MyDocs/resume.d" st_atime="0" st_ctime="0" st_mtime="0"/>
+		<File home="4" path="/testDir/MyDocs" st_atime="0" st_ctime="0" st_mode="16384" st_mtime="0"/>
+	</files>
+	<nodes>
+		<node id="1">
+			192.168.0.4
+		</node>
+		<node id="2">
+			192.168.0.4
+		</node>
+		<node id="3">
+			192.168.0.4
+		</node>
+		<node id="4">
+			192.168.0.4
+		</node>
+	</nodes>
+</xml>

@@ -21,11 +21,9 @@ class Rsync():
 
 	def push(self, filename):
 		command = "rsync " + self.attributes + " " + filename + " " + self.remotehost + ":" + self.remotedir + "/" + filename
-		print command
 		os.system(command)
 	
 	def pull(self, filename):
 		command = "rsync " + self.attributes + " " + self.remotehost + ":" + self.remotedir + "/" + filename  + " " + filename 
-		print command
 		os.system(command)
 

@@ -5,6 +5,7 @@ from errno import ENOENT, ENOTDIR
 from stat import S_IFDIR, S_IFLNK, S_IFREG
 from sys import argv, exit
 from time import time
+import os
 
 from fuse import FUSE, Operations, LoggingMixIn
 from metadata import Metadata, file_defaults, file_attributes
@@ -16,7 +17,8 @@ class Clyde(LoggingMixIn, Operations):
     
     def __init__(self, local_storage_path, mount_point, clone_addr=None):
         self.metadata = Metadata(local_storage_path)
-        self.loopback = Loopback(local_storage_path + "/files")
+        self.loopback = Loopback(local_storage_path+'/files')
+        self.local_storage = local_storage_path+'/files/'
        
     def chmod(self, path, mode):
         return self.metadata.chmod(path, mode)
@@ -25,19 +27,41 @@ class Clyde(LoggingMixIn, Operations):
         return self.metadata.chown(path, uid, gid)
     
     def create(self, path, mode):
-        return self.metadata.create(path, mode)
+        self.metadata.create(path, mode)
+        return self.loopback("create", path,  mode)
        
     def getattr(self, path, fh=None):
-        return self.metadata.getattr(path, fh)
-        
+        '''
+         Policy G1: if m_time of a local version of file == m_time of home verision then
+                    file is either the home or a cached version that is ok to use
+        '''
+        if metadata.isHome(path):
+           st = loopback("getattr", path)
+        else:
+           st = metadata("getattr", path)
+
+        return st
+
+
     def mkdir(self, path, mode):
         return self.metadata.mkdir(path, mode)
     
     def open(self, path, flags):
-        return self.loopback.open(path, flags)
+        '''
+         Policy O1: only read home or cached files
+                    cached files must be 'recent'
+         *Policy O2: if file is too large for current device, do not open and report to user
+         Policy O3: if home computer is offline look for an alternative version
+                    must flag metadata so home knows to update when online
+        '''
+        if metadata.isHome(path):
+           return self.loopback("open", path, flags)
+        else:
+           print("This is where I should rsynch")
+           raise OSError(ENOENT)
     
     def read(self, path, size, offset, fh):
-        return self.loopback.read(path, size, offset, fh)
+        return self.loopback("read", path, size, offset, fh)
     
     def readdir(self, path, fh):
         return self.metadata.readdir(path, fh)
@@ -46,42 +70,44 @@ class Clyde(LoggingMixIn, Operations):
         return self.data[path]
     
     def rename(self, old, new):
-        self.files[new] = self.files.pop(old)
-        return 0
+        return self.loopback("rename", old, new)
     
     def rmdir(self, path):
-        self.files.pop(path)
-        return 0
+        return self.metadata.rmdir(path)
     
     def statfs(self, path):
         return dict(f_bsize=512, f_blocks=4096, f_bavail=2048)
     
     def symlink(self, target, source):
-        self.files[target] = dict(st_mode=(S_IFLNK | 0777), st_nlink=1,
-            st_size=len(source))
-        self.data[target] = source
-        return 0
+        return self.loopback("symlink", source, target)
     
     def truncate(self, path, length, fh=None):
-        self.data[path] = self.data[path][:length]
-        self.files[path]['st_size'] = length
+        self.loopback("truncate", path, length, None)
         return 0
     
     def unlink(self, path):
-        self.files.pop(path)
         return 0
     
     def utimens(self, path, times=None):
         now = time()
         atime, mtime = times if times else (now, now)
-        self.files[path]['st_atime'] = atime
-        self.files[path]['st_mtime'] = mtime
-        return 0
+        self.loopback("utimens", path, (atime, mtime))
+        return self.metadata("utimens", path, (atime, mtime))
     
     def write(self, path, data, offset, fh):
-        self.data[path] = self.data[path][:offset] + data
-        self.files[path]['st_size'] = len(self.data[path])
-        return len(data)
+        '''
+         Policy W1: update metadata file with stat info on every write 
+        '''
+        return self.loopback("write", path, data, offset, fh)
+
+    def release(self, path, fh):
+        return self.loopback("release", path, fh)
+
+    def flush(self, path, fh):
+        return self.loopback("flush", path, fh)
+
+    def fsync(self, path, datasync, fh):
+        return self.loopback("fsync", path, datasync, fh)
 
     def read_files_from_xml(self, path):
         dom = parse("metadata.xml")

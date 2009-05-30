@@ -139,15 +139,9 @@ class Metadata(Operations, LoggingMixIn):
       self.writexml(dom)
 
 
-   def isLocal(self, path):
-      flag = False
-      dom = parse(self.xmlpath)
-      files = dom.getElementsByTagName("File")
-      for node in files:
-         if (node.getAttribute("path") == path) and (node.getAttribute("node") == '2'):
-            flag = True
-            break
-      return flag
+   def isHome(self, path):
+      node = get_file_node(path)
+      return node.getAttribute("home") == this.node
 
    def writexml(self, dom):
       fp = open(self.xmlpath, "w")
