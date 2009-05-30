@@ -127,8 +127,16 @@ class Metadata(Operations, LoggingMixIn):
       self.writexml(dom)
       
       return 0
-   #def utimens(self, path, times)
-   #   pass
+
+   def utimens(self, path, times=None):
+      now = time()
+      atime, mtime = times if times else (now, now)
+      dom = parse(self.xmlpath)
+      node = get_file_node(dom, path)
+      node.setAttribute("st_atime", str(int(atime)))
+      node.setAttribute("st_mtime", str(int(mtime)))
+
+      self.writexml(dom)
 
 
    def isLocal(self, path):
