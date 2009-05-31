@@ -14,12 +14,13 @@ def format_metadata(xmlpath):
    root.setAttribute("st_mtime", now)
    root.setAttribute("st_atime", now)
 
-   xml.appendChild(root)
+   files = dom.createElement("files")
+
+   files.appendChild(root)
+   xml.appendChild(files)
    dom.appendChild(xml)
 
    fp = open(xmlpath, "w")
    dom.writexml(fp, newl="\n")
    fp.close()
 
-def node2ip(node)
-	

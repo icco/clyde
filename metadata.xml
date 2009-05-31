@@ -1,44 +1,37 @@
 <?xml version="1.0" ?>
 <xml>
-		<files>
-     	<File name="/">
-			<Direntry d_name="testDir"/>
-			<Direntry d_name="documents"/>
-			<Direntry d_name="testfile.test"/>
-		</File>
-		<File id="2" name="/testDir" st_atime="0" st_ctime="0" st_mtime="0">
-			<Direntry d_name="test1.test"/>
-			<Direntry d_name="test2.test"/>
-			<Direntry d_name="MyDocs"/>
-		</File>
-		<File id="3" name="/testDir/MyDocs" st_atime="0" st_ctime="0" st_mtime="0">
-			<Direntry d_name="mydoc.g"/>
-			<Direntry d_name="resume.d"/>
-		</File>
+<files>
+
+   <File path="/" st_atime="1243726384" st_ctime="1243726384" st_mode="16895" st_mtime="1243726384">
+      <Direntry d_name="testDir"/>
+      <Direntry d_name="documents"/>
+      <Direntry d_name="testfile.test"/>
+      <Direntry d_name="newfile"/>
+   </File>
+
+   <File path="/testDir" st_atime="1243726413" st_ctime="1243726413" st_mode="16832" st_mtime="1243726413"/>
+
+   <File path="/documents" st_atime="1243726428" st_ctime="1243726428" st_mode="16832" st_mtime="1243726428">
+      <Direntry d_name="doc1.txt"/>
+      <Direntry d_name="doc2.txt"/>
+      <Direntry d_name="doc3.txt"/>
+   </File>
+
+   <File path="/testfile.test" st_atime="1243726432" st_ctime="1243726432" st_mode="33152" st_mtime="1243726432"/>
+
+   <File path="/documents/doc1.txt" st_atime="1243726468" st_ctime="1243726468" st_mode="33152" st_mtime="1243726468"/>
+
+   <File path="/documents/doc2.txt" st_atime="1243726471" st_ctime="1243726471" st_mode="33152" st_mtime="1243726471"/>
+
+   <File path="/documents/doc3.txt" st_atime="1243726476" st_ctime="1243726476" st_mode="33152" st_mtime="1243726476"/>
+
+   <File path="/newfile" st_atime="1243727579" st_ctime="1243727579" st_mode="33152" st_mtime="1243727579"/>
 
 
-		<File home="4" path="/testDir" st_atime="0" st_ctime="0" st_mode="16384" st_mtime="0"/>
-		<File home="4" path="/testfile.test" st_atime="0" st_ctime="0" st_mtime="0"/>
-		<File home="4" path="/documents" st_atime="0" st_ctime="0" st_mode="16384" st_mtime="0"/>
-		<File home="4" path="/" st_atime="0" st_ctime="0" st_mode="16384" st_mtime="0"/>
-		<File home="4" path="/testDir/test1.test" st_atime="0" st_ctime="0" st_mtime="0"/>
-		<File home="4" path="/testDir/test2.test" st_atime="0" st_ctime="0" st_mtime="0"/>
-		<File home="4" path="/testDir/MyDocs/mydoc.g" st_atime="0" st_ctime="0" st_mtime="0"/>
-		<File home="4" path="/testDir/MyDocs/resume.d" st_atime="0" st_ctime="0" st_mtime="0"/>
-		<File home="4" path="/testDir/MyDocs" st_atime="0" st_ctime="0" st_mode="16384" st_mtime="0"/>
-	</files>
-	<nodes>
-		<node id="1" remoteDir="/fuse">
-			192.168.0.4
-		</node>
-		<node id="2" remoteDir="/fuse">
-			192.168.0.4
-		</node>
-		<node id="3" remoteDir="/fuse">
-			192.168.0.4
-		</node>
-		<node id="4" remoteDir="/fuse">
-			192.168.0.4
-		</node>
-	</nodes>
+</files>
+
+<nodes>
+   <Node id="0" ip="127.0.0.1" remoteDir="/fuse"/>
+</nodes>
+
 </xml>

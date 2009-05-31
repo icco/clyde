@@ -54,11 +54,14 @@ class Clyde(LoggingMixIn, Operations):
          Policy O3: if home computer is offline look for an alternative version
                     must flag metadata so home knows to update when online
         '''
-        if metadata.isHome(path):
-           return self.loopback("open", path, flags)
+        if self.metadata.isHome(path):
+			return self.loopback("open", path, flags)
         else:
-           print("This is where I should rsynch")
-           raise OSError(ENOENT)
+			self.pullFile(path)
+			# change the home...
+			return self.loopback("open", path, flags)
+			
+
     
     def read(self, path, size, offset, fh):
         return self.loopback("read", path, size, offset, fh)
@@ -104,7 +107,13 @@ class Clyde(LoggingMixIn, Operations):
         return self.loopback("release", path, fh)
 
     def flush(self, path, fh):
-        return self.loopback("flush", path, fh)
+		# if this is the home node, just flush
+		# --- So this is where we would add logic if we didn't prevent this from happening
+        if self.metadata.isHome(path):
+        	return self.loopback("flush", path, fh)
+		else:
+			self.pushFile(path)
+        	return self.loopback("flush", path, fh)
 
     def fsync(self, path, datasync, fh):
         return self.loopback("fsync", path, datasync, fh)
@@ -126,6 +135,22 @@ class Clyde(LoggingMixIn, Operations):
                else:
                   self.files[path][key] = file_defaults[key]
                   print "key: %s,  default: %s" % (key, file_defaults[key])
+
+	def pullFile(self, path):
+		# find node and get ip of node
+		node = self.metadata.getNodeDom(path)
+		# create new rsync object
+		rsync = Rsync(node.getAttribute("ip"), node.getAttribute("remoteDir"))
+		# pull from that rsync object
+		rsync.pull(path)
+
+	def pushFile(self, path):
+		# find node and get ip of node
+		node = self.metadata.getNodeDom(path)
+		# create new rsync object
+		rsync = Rsync(node.getAttribute("ip"), node.getAttribute("remoteDir"))
+		# push to that rsync object
+		rsync.push(path)
 
 if __name__ == "__main__":
     if len(argv) < 3 :

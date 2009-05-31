@@ -8,8 +8,6 @@ from sys import argv, exit
 
 import os
 
-from metadata import Metadata
-
 class Rsync():    
 	def __init__(self, remote, remotedir):
 		self.remotehost = remote

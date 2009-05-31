@@ -13,6 +13,8 @@ from fuse import FUSE, Operations, LoggingMixIn
 
 from time import time
 
+import config
+
 file_defaults = {}
 
 file_defaults = dict( st_mode=(S_IFREG | 0755), st_atime=23, st_ctime=3, st_mtime=3 )
@@ -34,6 +36,8 @@ class Metadata(Operations, LoggingMixIn):
       self.files = dict()
       self.files['/'] = dict(st_mode=(S_IFDIR | 0755), st_ctime=0,
          st_mtime=0, st_atime=0)
+
+      self.node = config.node
    
    def __call__(self, op, path, *args):
         return LoggingMixIn.__call__(self, op, path, *args)
@@ -73,7 +77,7 @@ class Metadata(Operations, LoggingMixIn):
    def create(self, path, mode):    
       # prepare File element to be put in metadata
       dom = parse(self.xmlpath)
-      root = dom.documentElement
+      root = dom.getElementsByTagName("files")[0]
 
       dir, fname = split_path(path)
 
@@ -90,6 +94,7 @@ class Metadata(Operations, LoggingMixIn):
       new_element.setAttribute("st_atime", now)
       new_element.setAttribute("st_mtime", now)
       new_element.setAttribute("st_mode", str(mode))
+      new_element.setAttribute("home", self.node)
 
       root.appendChild(new_element)
 
@@ -140,13 +145,25 @@ class Metadata(Operations, LoggingMixIn):
 
 
    def isHome(self, path):
-      node = get_file_node(path)
+	  dom = parse(self.xmlpath)
+      node = get_file_node(dom,path)
       return node.getAttribute("home") == this.node
 
    def writexml(self, dom):
       fp = open(self.xmlpath, "w")
       dom.writexml(fp, newl='\n')
       fp.close()
+
+   def getNodeDom(self, path):
+	  dom = parse(self.xmlpath)
+      pathnode = get_file_node(dom,path)
+      nodes = dom.getElementsByTagName("Node")
+      for node in nodes:
+		  if node.getAttribute("id") == pathnode:
+		     return node
+      print "we have an error"
+	  raise OSError(ENOENT) # the file is not found in the metadata
+
 
 def isDir(dom, path, node=None):
    if not node:
